@@ -695,6 +695,66 @@ async function initArtifacts() {
   renderVerdict(normalizedModels);
   renderDegradation(artifacts.stintPredictions);
   renderPrediction(artifacts.stintPredictions, artifacts.summary);
+  initLivePredictor(artifacts.summary);
+}
+
+
+async function initLivePredictor(summary = {}) {
+  const driverSelect = $('#predict-driver');
+  const gridInput = $('#predict-grid');
+  const lapInput = $('#predict-lap');
+  const tireInput = $('#predict-tire-age');
+  const button = $('#predict-button');
+  const message = $('#predict-message');
+  const result = $('#predict-result');
+  if (!driverSelect || !button) return;
+
+  try {
+    const healthResponse = await fetch('/api');
+    const health = await healthResponse.json();
+    if (!healthResponse.ok || !health.ok) throw new Error(health.detail || 'Model API unavailable');
+    const drivers = health.drivers || [];
+    driverSelect.innerHTML = drivers.map((driver) => `<option value="${escapeHTML(driver)}">${escapeHTML(driver)}</option>`).join('');
+    message.innerHTML = '<span class="red-dot"></span> TRAINED ARTIFACT CONNECTED';
+    message.classList.add('is-ready');
+
+    button.addEventListener('click', async () => {
+      const grid = Number(gridInput.value);
+      const lap = Number(lapInput.value);
+      const tireAge = Number(tireInput.value);
+      if (!Number.isInteger(grid) || grid < 1 || !Number.isInteger(lap) || lap < 1 || !Number.isInteger(tireAge) || tireAge < 0) {
+        result.textContent = 'Enter valid integer values for grid, lap, and tire age.';
+        result.classList.add('is-error');
+        return;
+      }
+      button.disabled = true;
+      button.classList.add('is-loading');
+      result.textContent = 'RUNNING TRAINED MODEL…';
+      result.classList.remove('is-error');
+      try {
+        const response = await fetch('/api/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ driver: driverSelect.value, grid_position: grid, lap_number: lap, tire_age: tireAge })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Prediction failed');
+        result.innerHTML = `<span class="predict-result-label">PREDICTED LAP TIME</span><strong>${formatMetric(data.prediction)} s</strong><small>${escapeHTML(data.model)} / ${escapeHTML(data.feature_set)} · ${escapeHTML(data.driver)}</small>`;
+      } catch (error) {
+        result.textContent = error.message;
+        result.classList.add('is-error');
+      } finally {
+        button.disabled = false;
+        button.classList.remove('is-loading');
+      }
+    });
+  } catch (error) {
+    driverSelect.innerHTML = '<option>MODEL UNAVAILABLE</option>';
+    button.disabled = true;
+    message.innerHTML = '<span class="red-dot"></span> MODEL API NOT AVAILABLE';
+    result.textContent = error.message;
+    result.classList.add('is-error');
+  }
 }
 
 function init() {

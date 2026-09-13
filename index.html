@@ -371,15 +371,16 @@
           </div>
           <aside class="inference-card">
             <div class="inference-top"><span class="technical-label">EXPERIMENTAL TOOL</span><span class="lock-icon">⌁</span></div>
-            <h3>Predict one lap.<br /><em>Only with the artifact.</em></h3>
-            <div class="fake-form" aria-label="Prediction interface preview">
-              <label>DRIVER<select disabled><option>MODEL ARTIFACT REQUIRED</option></select></label>
-              <label>GRID POSITION<input disabled value="—" /></label>
-              <label>LAP NUMBER<input disabled value="—" /></label>
-              <label>TIRE AGE<input disabled value="—" /></label>
+            <h3>Predict one lap.<br /><em>Using the trained artifact.</em></h3>
+            <div class="fake-form" aria-label="Live lap-time prediction interface">
+              <label>DRIVER<select id="predict-driver"><option>Loading drivers…</option></select></label>
+              <label>GRID POSITION<input id="predict-grid" type="number" min="1" step="1" placeholder="e.g. 2" /></label>
+              <label>LAP NUMBER<input id="predict-lap" type="number" min="1" step="1" placeholder="e.g. 20" /></label>
+              <label>TIRE AGE<input id="predict-tire-age" type="number" min="0" step="1" placeholder="e.g. 8" /></label>
             </div>
-            <button class="button button-disabled" disabled>Predict lap time <span>↗</span></button>
-            <p><span class="red-dot"></span> MODEL ARTIFACT NOT CONNECTED</p>
+            <button class="button" id="predict-button" type="button">Predict lap time <span>↗</span></button>
+            <p id="predict-message"><span class="red-dot"></span> TRAINED ARTIFACT CONNECTED</p>
+            <div id="predict-result" class="predict-result" aria-live="polite"></div>
           </aside>
         </div>
       </section>

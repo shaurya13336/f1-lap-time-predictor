@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import math
+import joblib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -396,6 +397,13 @@ def train_and_evaluate(cleaned: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     best = comparison.loc[best_index].to_dict()
     best_key = (str(best["model"]), str(best["feature_set"]))
 
+    # Refit the selected best configuration on the exact training partition.
+    # This is the model artifact used by the live predictor; the final stint
+    # remains completely held out from this fit.
+    best_features = feature_sets[best_key[1]]
+    best_model = build_models()[best_key[0]]
+    best_model.fit(train[best_features], train["lap_time_seconds"])
+
     # Predictions in the presentation artifact always come from the observed
     # best configuration selected by the actual holdout RMSE.
     final_predictions = test.copy()
@@ -413,7 +421,13 @@ def train_and_evaluate(cleaned: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     train_predictions["prediction_feature_set"] = best["feature_set"]
 
     prediction_rows = pd.concat([train_predictions, final_predictions], ignore_index=True)
-    return comparison, prediction_rows, {"best": best, "train_rows": len(train), "test_rows": len(test)}
+    return comparison, prediction_rows, {
+        "best": best,
+        "train_rows": len(train),
+        "test_rows": len(test),
+        "best_model": best_model,
+        "best_features": best_features,
+    }
 
 
 def save_final_stint_plot(selected_driver_rows: pd.DataFrame, output_path: Path, driver_label: str, model_label: str) -> None:
@@ -655,6 +669,27 @@ def main() -> None:
         prediction_rows,
         model_summary,
         source_shapes,
+    )
+
+    # Persist only the trained model and small metadata needed by the live API.
+    joblib.dump(model_summary["best_model"], RESULTS_DIR / "best_model.joblib", compress=3)
+    (RESULTS_DIR / "model_metadata.json").write_text(
+        json.dumps(
+            {
+                "model": model_summary["best"]["model"],
+                "feature_set": model_summary["best"]["feature_set"],
+                "features": model_summary["best_features"],
+                "race_id": int(selection.race_id),
+                "race": f"{selection.year} {selection.name}",
+                "drivers": completed["driver_name"].astype(str).tolist(),
+                "seed": RANDOM_SEED,
+                "train_rows": int(model_summary["train_rows"]),
+                "test_rows": int(model_summary["test_rows"]),
+                "prediction_note": "Driver is accepted as experiment context but is not a model feature; the evaluated enhanced feature set is grid + lap + tire_age.",
+            },
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
     )
 
     print(f"Selected race: {selection.year} {selection.name} (raceId={selection.race_id})")

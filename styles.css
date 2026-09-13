@@ -404,6 +404,16 @@ h3 { margin: 0; font-size: 21px; line-height: 1.13; letter-spacing: -.035em; }
 .fake-form select, .fake-form input, .select-label select { color: var(--faint); border: 1px solid var(--line); background: rgba(9,10,12,.7); padding: 9px 10px; border-radius: 0; outline: 0; font: 9px var(--mono); min-width: 0; }
 .fake-form input { width: 100%; }
 .button-disabled { margin-top: auto; width: 100%; color: var(--faint); border-color: var(--line); justify-content: space-between; cursor: not-allowed; }
+.inference-card .button { margin-top: 14px; width: 100%; justify-content: space-between; }
+.inference-card .button:disabled { opacity: .55; cursor: wait; }
+.fake-form select:not(:disabled), .fake-form input:not(:disabled) { color: var(--faint); cursor: text; }
+.predict-result { margin-top: 12px; min-height: 42px; border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 2px; font-family: var(--mono); }
+.predict-result strong { font-size: 24px; letter-spacing: -.04em; }
+.predict-result-label, .predict-result small { color: var(--dim); font: 8px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.predict-result small { letter-spacing: .04em; }
+.predict-result.is-error { color: var(--red-bright); }
+.inference-card > p.is-ready { color: var(--faint); }
+.button.is-loading { opacity: .65; }
 .inference-card > p { display: flex; align-items: center; gap: 9px; color: var(--red-bright); font: 8px var(--mono); letter-spacing: .09em; margin: 16px 0 0; }
 
 /* charts */

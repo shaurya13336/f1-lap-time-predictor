@@ -1,0 +1,24 @@
+{
+  "model": "Random Forest",
+  "feature_set": "enhanced",
+  "features": [
+    "grid",
+    "lap",
+    "tire_age"
+  ],
+  "race_id": 841,
+  "race": "2011 Australian Grand Prix",
+  "drivers": [
+    "Lewis Hamilton",
+    "Fernando Alonso",
+    "Felipe Massa",
+    "Mark Webber",
+    "Jenson Button",
+    "Sebastian Vettel",
+    "Vitaly Petrov"
+  ],
+  "seed": 42,
+  "train_rows": 247,
+  "test_rows": 123,
+  "prediction_note": "Driver is accepted as experiment context but is not a model feature; the evaluated enhanced feature set is grid + lap + tire_age."
+}

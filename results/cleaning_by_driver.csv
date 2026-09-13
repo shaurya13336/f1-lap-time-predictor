@@ -1,8 +1,0 @@
-driver_id,driver,driver_name,raw_laps,pit_stop_laps,post_pit_laps,extreme_slow_laps,removed_laps,retained_laps,driver_median_ms,stints,final_stint,final_stint_laps
-1,HAM,Lewis Hamilton,58,2,2,0,4,54,91777.500000,3,3,21
-4,ALO,Fernando Alonso,58,3,3,0,6,52,91107.500000,4,4,15
-13,MAS,Felipe Massa,58,3,3,0,6,52,92453.000000,4,4,9
-17,WEB,Mark Webber,58,3,3,0,6,52,91367.000000,4,4,16
-18,BUT,Jenson Button,58,3,3,0,6,52,91326.500000,3,4,20
-20,VET,Sebastian Vettel,58,2,2,0,4,54,91308.000000,3,3,21
-808,PET,Vitaly Petrov,58,2,2,0,4,54,91785.500000,3,3,21

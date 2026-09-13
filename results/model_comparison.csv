@@ -1,5 +1,0 @@
-race_id,model,algorithm,feature_set,features,rmse,mae,train_rows,test_rows,random_seed
-841,Random Forest,Random Forest,baseline,grid + lap,1.267923499,1.166831970,247,123,42
-841,Random Forest,Random Forest,enhanced,grid + lap + tire_age,0.944516850,0.753846951,247,123,42
-841,Gradient Boosting,Gradient Boosting,baseline,grid + lap,1.063629266,0.917512417,247,123,42
-841,Gradient Boosting,Gradient Boosting,enhanced,grid + lap + tire_age,0.948892453,0.755877974,247,123,42
