@@ -1,0 +1,11 @@
+{
+  "name": "apex-research-experiment-001",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 4173 --bind 0.0.0.0",
+    "experiment": "python experiment/run_experiment.py",
+    "test": "python -m unittest discover -s tests -v"
+  }
+}

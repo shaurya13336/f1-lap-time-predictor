@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090a0c" />
+    <meta name="description" content="APEX / RESEARCH — an artifact-aware Formula One lap time prediction experiment." />
+    <title>APEX / RESEARCH — Experiment 001</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-noise" aria-hidden="true"></div>
+    <div class="page-grid" aria-hidden="true"></div>
+
+    <header class="site-nav" id="top">
+      <a class="brand-lockup" href="#overview" aria-label="APEX Research home">
+        <span class="brand-mark">A</span>
+        <span class="brand-name">APEX <b>/</b> RESEARCH</span>
+      </a>
+      <div class="nav-center">
+        <span class="nav-experiment">EXP 001</span>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#overview" data-nav="overview">Overview</a>
+          <a href="#data" data-nav="data">Data</a>
+          <a href="#cleaning" data-nav="method">Method</a>
+          <a href="#leakage" data-nav="leakage">Leakage</a>
+          <a href="#models" data-nav="models">Models</a>
+          <a href="#degradation" data-nav="degradation">Degradation</a>
+          <a href="#results" data-nav="results">Results</a>
+          <a href="#reproducibility" data-nav="reproducibility">Reproduce</a>
+        </nav>
+      </div>
+      <div class="nav-status" aria-live="polite">
+        <span class="status-led pending"></span>
+        <span id="nav-artifact-status">ARTIFACTS PENDING</span>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <aside class="section-index" aria-label="Experiment index">
+      <div class="index-line"></div>
+      <a href="#overview" data-index="overview"><span>01</span> Overview</a>
+      <a href="#data" data-index="data"><span>02</span> Data</a>
+      <a href="#cleaning" data-index="cleaning"><span>03</span> Cleaning</a>
+      <a href="#tire-age" data-index="tire-age"><span>04</span> Tire age</a>
+      <a href="#leakage" data-index="leakage"><span>05</span> Leakage</a>
+      <a href="#models" data-index="models"><span>06</span> Models</a>
+      <a href="#degradation" data-index="degradation"><span>07</span> Degradation</a>
+      <a href="#results" data-index="results"><span>08</span> Results</a>
+      <a href="#final-stint" data-index="final-stint"><span>09</span> Final stint</a>
+      <a href="#verdict" data-index="verdict"><span>10</span> Verdict</a>
+      <a href="#reproducibility" data-index="reproducibility"><span>11</span> Reproduce</a>
+    </aside>
+
+    <main>
+      <section class="hero section-shell" id="overview">
+        <div class="hero-aura" aria-hidden="true"></div>
+        <div class="hero-copy reveal">
+          <div class="eyebrow-row">
+            <span class="red-dot"></span>
+            <span>EXPERIMENT 001</span>
+            <span class="eyebrow-rule"></span>
+            <span>RACE ENGINEERING × MACHINE LEARNING</span>
+          </div>
+          <p class="hero-kicker">FORMULA ONE</p>
+          <h1>LAP TIME<br /><em>PREDICTOR</em></h1>
+          <div class="hero-question">
+            <span class="question-index">01 / CORE QUESTION</span>
+            <p>Can tire age explain the next lap?</p>
+          </div>
+          <p class="hero-deck">A leakage-aware experiment that tests whether a single engineered feature can make lap-time prediction more honest, more useful, and easier to inspect.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#data"><span>Enter the experiment</span><i>↘</i></a>
+            <a class="text-link" href="#reproducibility">Read the artifact contract <span>↗</span></a>
+          </div>
+        </div>
+
+        <div class="telemetry-stage reveal reveal-delay-1" aria-label="Abstract live telemetry visualization">
+          <div class="telemetry-header">
+            <div>
+              <span class="technical-label">LIVE TRACE</span>
+              <span class="trace-caption">ABSTRACT VIEW / NOT A RESULT</span>
+              <span class="trace-caption" id="car-trace-mode">CAR / TELEMETRY RUN</span>
+              <span class="trace-caption trace-speed">V <b id="trace-speed">000</b> KM/H</span>
+            </div>
+            <span class="trace-id">TRACE / 001</span>
+          </div>
+          <div class="telemetry-viewport">
+            <div class="telemetry-corner corner-tl">X <span id="trace-x">00.000</span><br /><b>Y <span id="trace-y">00.000</span></b></div>
+            <div class="telemetry-corner corner-tr">MODE<br /><b>HOLDOUT</b></div>
+            <svg class="telemetry-svg" viewBox="0 0 720 390" role="img" aria-label="Animated abstract circuit trace">
+              <defs>
+                <linearGradient id="traceFade" x1="0" x2="1">
+                  <stop offset="0" stop-color="#e9493f" stop-opacity="0.08" />
+                  <stop offset="0.35" stop-color="#e9493f" stop-opacity="0.88" />
+                  <stop offset="1" stop-color="#b8c8c9" stop-opacity="0.16" />
+                </linearGradient>
+                <linearGradient id="sweepFade" x1="0" x2="1">
+                  <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
+                  <stop offset="0.5" stop-color="#f4f1e9" stop-opacity="0.7" />
+                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+                </linearGradient>
+                <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+              <g class="telemetry-grid-lines">
+                <path d="M0 78H720M0 156H720M0 234H720M0 312H720" />
+                <path d="M90 0V390M180 0V390M270 0V390M360 0V390M450 0V390M540 0V390M630 0V390" />
+              </g>
+              <path class="trace-ghost" d="M48 286 C78 286 82 196 124 194 C161 192 157 314 208 312 C255 310 244 102 300 104 C353 106 337 263 383 260 C427 257 433 66 480 69 C532 72 512 304 574 300 C616 297 610 170 674 170" />
+              <path class="trace-main" d="M48 286 C78 286 82 196 124 194 C161 192 157 314 208 312 C255 310 244 102 300 104 C353 106 337 263 383 260 C427 257 433 66 480 69 C532 72 512 304 574 300 C616 297 610 170 674 170" />
+              <path class="trace-spark" d="M48 286 C78 286 82 196 124 194 C161 192 157 314 208 312 C255 310 244 102 300 104 C353 106 337 263 383 260 C427 257 433 66 480 69 C532 72 512 304 574 300 C616 297 610 170 674 170" />
+              <path class="trace-sweep" d="M60 284 L160 284" />
+              <g class="telemetry-marker" filter="url(#softGlow)">
+                <circle r="7" cx="124" cy="194"></circle>
+                <circle r="18" cx="124" cy="194"></circle>
+              </g>
+              <g id="hero-car" class="hero-car" transform="translate(124 194) scale(.78)" role="img" aria-label="Original Formula One telemetry car">
+                <title>Original Formula One telemetry car</title>
+                <g class="car-trail" aria-hidden="true">
+                  <path d="M-78 -3H-51M-85 3H-48M-72 9H-40" />
+                </g>
+                <ellipse class="car-shadow" cx="0" cy="11" rx="58" ry="5" />
+                <g class="car-wheels">
+                  <rect x="-32" y="-12" width="14" height="6" rx="2" />
+                  <rect x="-32" y="6" width="14" height="6" rx="2" />
+                  <rect x="28" y="-11" width="14" height="6" rx="2" />
+                  <rect x="28" y="5" width="14" height="6" rx="2" />
+                </g>
+                <path class="car-rear-wing" d="M-47 -10L-30 -10L-25 -6L-51 -6ZM-48 10L-29 10L-25 6L-51 6Z" />
+                <path class="car-body" d="M-45 -6C-31 -8-20 -8-9 -7L13 -6C25 -5 36 -2 46 0L58 1L46 5L14 7L-14 7L-42 5L-51 1Z" />
+                <path class="car-sidepod" d="M-27 -5C-13 -8 4 -7 17 -5L24 0L14 5L-23 5L-34 1Z" />
+                <path class="car-nose" d="M13 -5L45 -2L64 0L49 4L14 5L22 1Z" />
+                <path class="car-front-wing" d="M48 -3L70 -6L74 -3L60 1L75 3L70 6L48 4Z" />
+                <path class="car-accent" d="M-43 1L-19 0L9 1L49 1" />
+                <path class="car-cockpit" d="M-13 -5C-10 -13-3 -16 7 -11L16 -5L10 0L-10 0Z" />
+                <circle class="car-helmet" cx="-1" cy="-8" r="4" />
+                <path class="car-halo" d="M-10 -5C-8 -16 4 -18 11 -8" />
+                <path class="car-fin" d="M-4 -14L1 -28L6 -14Z" />
+                <circle class="car-sensor" cx="63" cy="0" r="1.8" />
+              </g>
+              <g class="telemetry-ticks">
+                <path d="M48 326V338M208 326V338M383 326V338M574 326V338M674 326V338" />
+              </g>
+              <text x="50" y="358">START</text><text x="630" y="358">SECTOR</text>
+            </svg>
+            <div class="trace-readout">
+              <span>OBSERVATION STATUS</span>
+              <strong>NO EXPERIMENT ARTIFACT</strong>
+              <small>Telemetry becomes evidence only after the generated results are connected.</small>
+            </div>
+            <div class="trace-axis"><span>0</span><span>TIME / LAP TRACE</span><span>—</span></div>
+          </div>
+          <div class="telemetry-footer">
+            <div><span>FEATURE</span><b>tire_age</b><em>pending</em></div>
+            <div><span>HOLDOUT</span><b>final stint</b><em>locked</em></div>
+            <div><span>MODEL</span><b>two regressors</b><em>pending</em></div>
+          </div>
+        </div>
+        <div class="hero-footer reveal reveal-delay-2">
+          <span class="scroll-cue"><i></i> Scroll to inspect the method</span>
+          <span class="hero-meta">APEX / RESEARCH <b>—</b> TRACEABLE BY DESIGN</span>
+        </div>
+      </section>
+
+      <section class="brief-section section-shell" id="brief">
+        <div class="section-topline reveal"><span>01 — OVERVIEW</span><span>THE EXPERIMENT BRIEF</span><span>STATUS / INSTRUMENTED</span></div>
+        <div class="brief-grid">
+          <div class="section-intro reveal">
+            <div class="section-number">01</div>
+            <h2>One question.<br /><em>Two feature sets.</em></h2>
+            <p>The baseline asks what grid position and lap number can explain. The enhanced model asks whether the elapsed life of the tire adds signal without borrowing information from the future.</p>
+          </div>
+          <div class="question-card reveal reveal-delay-1">
+            <span class="technical-label">QUESTION OF THE EXPERIMENT</span>
+            <p>Can tire age explain<br /><b>the next lap?</b></p>
+            <div class="question-underline"></div>
+            <span class="card-footnote">A predictive question, not a causal claim.</span>
+          </div>
+        </div>
+        <div class="feature-compare reveal reveal-delay-2">
+          <article class="feature-block baseline">
+            <div class="feature-block-top"><span class="technical-label">BASELINE / CONTROL</span><span class="feature-code">F₀</span></div>
+            <h3>What the race context already knows.</h3>
+            <div class="feature-chips"><span>grid position</span><span>lap number</span></div>
+            <div class="feature-line"><span></span></div>
+          </article>
+          <div class="compare-glyph" aria-hidden="true">+</div>
+          <article class="feature-block enhanced">
+            <div class="feature-block-top"><span class="technical-label red-label">ENHANCED / TEST</span><span class="feature-code">F₁</span></div>
+            <h3>Better features.<br /><em>Not just bigger models.</em></h3>
+            <div class="feature-chips"><span>grid position</span><span>lap number</span><span class="accent-chip">tire_age</span></div>
+            <div class="feature-line"><span></span></div>
+          </article>
+        </div>
+        <div class="method-rail reveal reveal-delay-3" aria-label="Experiment sequence">
+          <div><span>01</span><b>DATA</b><small>four source tables</small></div>
+          <i></i><div><span>02</span><b>RECONSTRUCT</b><small>stints + tire age</small></div>
+          <i></i><div><span>03</span><b>HOLD OUT</b><small>final stint only</small></div>
+          <i></i><div><span>04</span><b>COMPARE</b><small>RMSE / MAE</small></div>
+        </div>
+      </section>
+
+      <section class="data-section section-shell" id="data">
+        <div class="section-topline reveal"><span>02 — DATA</span><span>FOUR TABLES / ONE TRACEABLE EXPERIMENT</span><span>INGEST / RELATE</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">02</span><h2>Build the lap<br /><em>from its context.</em></h2></div>
+          <p>Four source tables become one analytical system. Each table has a job; none is decorative. The experiment can be followed from race identity to final-stint error.</p>
+        </div>
+        <div class="dataset-system reveal reveal-delay-1">
+          <svg class="dataset-connections" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
+            <path class="connection connection-a" d="M120 104 C280 104 295 300 500 300" />
+            <path class="connection connection-b" d="M380 104 C440 104 440 300 500 300" />
+            <path class="connection connection-c" d="M620 104 C560 104 560 300 500 300" />
+            <path class="connection connection-d" d="M880 104 C720 104 705 300 500 300" />
+            <circle cx="500" cy="300" r="5" />
+          </svg>
+          <article class="dataset-node node-races" data-dataset="races">
+            <div class="node-top"><span class="dataset-icon icon-orbit"></span><span class="technical-label">SOURCE 01</span><span class="node-state" data-source-state="races.csv">required</span></div>
+            <h3>RACES</h3><p>Race metadata and event structure.</p>
+            <div class="node-footer"><span>races.csv</span><b>↘</b></div>
+          </article>
+          <article class="dataset-node node-results" data-dataset="results">
+            <div class="node-top"><span class="dataset-icon icon-grid"></span><span class="technical-label">SOURCE 02</span><span class="node-state" data-source-state="results.csv">required</span></div>
+            <h3>RESULTS</h3><p>Driver outcomes and grid information.</p>
+            <div class="node-footer"><span>results.csv</span><b>↘</b></div>
+          </article>
+          <article class="dataset-node node-laps" data-dataset="laps">
+            <div class="node-top"><span class="dataset-icon icon-wave"></span><span class="technical-label">SOURCE 03</span><span class="node-state" data-source-state="lap_times.csv">required</span></div>
+            <h3>LAP TIMES</h3><p>Lap-by-lap timing observations.</p>
+            <div class="node-footer"><span>lap_times.csv</span><b>↘</b></div>
+          </article>
+          <article class="dataset-node node-pits" data-dataset="pits">
+            <div class="node-top"><span class="dataset-icon icon-pit"></span><span class="technical-label">SOURCE 04</span><span class="node-state" data-source-state="pit_stops.csv">required</span></div>
+            <h3>PIT STOPS</h3><p>Pit events used to rebuild stints.</p>
+            <div class="node-footer"><span>pit_stops.csv</span><b>↘</b></div>
+          </article>
+          <div class="system-core"><span class="core-orbit"></span><span class="technical-label">JOIN / TRACE</span><b>ONE LAP<br />AT A TIME</b></div>
+        </div>
+        <div class="data-bottom reveal">
+          <div class="data-statement"><span class="red-dot"></span><span>Every lap tells part of the story.</span></div>
+          <div class="data-contract"><span class="technical-label">DATA ACCESS CONTRACT</span><code>raceId → driverId → lap → stint → features</code><span class="data-run-meta" id="data-run-meta">RUN / EVALUATION PENDING</span></div>
+        </div>
+      </section>
+
+      <section class="cleaning-section section-shell" id="cleaning">
+        <div class="section-topline reveal"><span>03 — CLEANING</span><span>REMOVE NOISE / KEEP PROVENANCE</span><span>FILTER / RECOUNT</span></div>
+        <div class="cleaning-grid">
+          <div class="section-intro reveal">
+            <div class="section-number">03</div>
+            <h2>Make the<br /><em>signal inspectable.</em></h2>
+            <p>Pit-in laps, immediate post-pit laps, and extreme slow laps are treated as explicit filters. Nothing is silently discarded. Counts arrive from <code>cleaning_summary.csv</code>.</p>
+            <div class="method-note"><span class="red-dot"></span><span>NO FABRICATED TELEMETRY</span></div>
+          </div>
+          <div class="cleaning-visual reveal reveal-delay-1" id="cleaning-visual">
+            <div class="counter-strip">
+              <div class="counter-cell"><span>RAW</span><strong data-cleaning-count="raw">—</strong><small>laps</small></div>
+              <div class="counter-arrow">→</div>
+              <div class="counter-cell is-removal"><span>REMOVED</span><strong data-cleaning-count="removed">—</strong><small>laps</small></div>
+              <div class="counter-arrow">→</div>
+              <div class="counter-cell is-retained"><span>RETAINED</span><strong data-cleaning-count="retained">—</strong><small>laps</small></div>
+            </div>
+            <div class="cleaning-track">
+              <div class="track-header"><span>RAW LAPS</span><span id="cleaning-status">EVALUATION PENDING</span></div>
+              <div class="track-line"><span class="track-fill"></span><i></i><i></i><i></i></div>
+              <div class="filter-stack">
+                <div class="filter-row" data-cleaning-key="pit_stop_laps"><span class="filter-marker"></span><b>PIT-STOP LAPS</b><span class="filter-desc">arrival / departure anomaly</span><strong>—</strong></div>
+                <div class="filter-row" data-cleaning-key="post_pit_laps"><span class="filter-marker"></span><b>POST-PIT LAPS</b><span class="filter-desc">immediate tire settling</span><strong>—</strong></div>
+                <div class="filter-row" data-cleaning-key="extreme_slow_laps"><span class="filter-marker"></span><b>EXTREME SLOW LAPS</b><span class="filter-desc">outlier threshold</span><strong>—</strong></div>
+              </div>
+              <div class="clean-output"><span class="output-bracket"></span><span>CLEAN LAP DATA</span><strong>awaiting artifact</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tire-section section-shell" id="tire-age">
+        <div class="section-topline reveal"><span>04 — TIRE AGE</span><span>RECONSTRUCT THE STINT</span><span>FEATURE / ENGINEERED</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">04</span><h2>One reset<br /><em>changes the trace.</em></h2></div>
+          <p><code>tire_age</code> is the number of laps elapsed since the latest pit stop. A pit event resets the feature; the next lap begins a new observed run.</p>
+        </div>
+        <div class="tire-instrument reveal reveal-delay-1">
+          <div class="equation-panel">
+            <span class="technical-label">FEATURE DEFINITION</span>
+            <div class="equation"><b>tire_age</b><span>=</span><em>current lap</em><span>−</span><em>latest pit lap</em></div>
+            <p>Not a guess. A reconstructed state carried into the model as a feature.</p>
+            <div class="equation-meta"><span>RESET EVENT <b>PIT STOP</b></span><span>UNIT <b>LAPS</b></span></div>
+          </div>
+          <div class="tire-gauge-panel">
+            <div class="gauge-header"><span class="technical-label">TIRE AGE / INSPECTOR</span><span class="pending-chip">NO ROW SELECTED</span></div>
+            <div class="gauge-body">
+              <div class="tire-ring"><div class="tire-ring-inner"><strong>—</strong><span>laps</span></div></div>
+              <div class="gauge-readout"><span>LAP</span><b>—</b><span>STINT</span><b>—</b><span>LAP TIME</span><b>—</b></div>
+            </div>
+            <div class="gauge-foot"><span>SCHEMA PREVIEW</span><span>REAL ROWS POPULATE FROM STINT ARTIFACT</span></div>
+          </div>
+        </div>
+        <div class="stint-panel reveal reveal-delay-2">
+          <div class="stint-panel-head"><div><span class="technical-label">STINT RECONSTRUCTION</span><h3>Age is a timeline, not a label.</h3></div><span class="stint-status">WAITING FOR <code>stint_predictions.csv</code></span></div>
+          <div class="stint-timeline" id="stint-timeline">
+            <div class="timeline-guide"><span>PREVIEW</span><span>ONE DRIVER / ALL STINTS</span></div>
+            <div class="timeline-track">
+              <div class="timeline-segment segment-muted"><span class="pit-marker">PIT</span><div class="segment-bar"></div><div class="segment-ticks"><i>AGE RESET</i><i>STINT CONTINUES</i><i>STINT CONTINUES</i></div></div>
+              <div class="timeline-reset">↻</div>
+              <div class="timeline-segment segment-muted"><span class="pit-marker">PIT</span><div class="segment-bar"></div><div class="segment-ticks"><i>AGE RESET</i><i>STINT CONTINUES</i><i>FINAL STINT</i></div></div>
+            </div>
+            <div class="timeline-legend"><span><i class="legend-dot red"></i> pit event / reset</span><span><i class="legend-dot muted"></i> tire_age increments with each lap</span><span>INTERACTION ENABLES WITH ARTIFACT</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="leakage-section section-shell" id="leakage">
+        <div class="section-topline reveal"><span>05 — LEAKAGE</span><span>CONTROL THE BOUNDARY</span><span>NO RANDOM SPLIT</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">05</span><h2>Don't let the<br /><em>future train itself.</em></h2></div>
+          <p>Laps from a single stint are close neighbors. Randomly scattering them across train and test would let the model see the same tire story on both sides of the boundary.</p>
+        </div>
+        <div class="leakage-compare reveal reveal-delay-1" id="leakage-visual">
+          <article class="split-card bad-split">
+            <div class="split-head"><span class="technical-label">BAD SPLIT</span><span class="split-verdict">LEAKAGE RISK</span></div>
+            <h3>Interleaved across the same stint.</h3>
+            <div class="interleaved-bars" aria-label="Conceptual random split">
+              <div><span></span><i>TRAIN</i><b>same stint</b></div>
+              <div><span class="test"></span><i>TEST</i><b>same stint</b></div>
+              <div><span></span><i>TRAIN</i><b>same stint</b></div>
+              <div><span class="test"></span><i>TEST</i><b>same stint</b></div>
+              <div><span></span><i>TRAIN</i><b>same stint</b></div>
+            </div>
+            <p class="split-note">The model can memorize a nearby tire-age trajectory.</p>
+          </article>
+          <div class="versus-mark"><span>VS</span><i></i></div>
+          <article class="split-card safe-split">
+            <div class="split-head"><span class="technical-label red-label">LEAKAGE-SAFE SPLIT</span><span class="split-verdict">EVALUATION CONTRACT</span></div>
+            <h3>Hold out the whole final stint.</h3>
+            <div class="stint-split-bars" aria-label="Leakage-safe split">
+              <div class="safe-row"><span class="bar-label">EARLIER STINTS</span><div class="safe-bar train-bar"><i></i><i></i><i></i><i></i><i></i><b>TRAIN</b></div></div>
+              <div class="safe-row"><span class="bar-label">FINAL STINT</span><div class="safe-bar test-bar"><i></i><i></i><i></i><b>TEST</b></div></div>
+            </div>
+            <div class="holdout-callout"><span class="red-dot"></span><b>ENTIRE FINAL STINT HELD OUT</b></div>
+          </article>
+        </div>
+        <div class="leakage-principle reveal"><span class="principle-line"></span><span>TRAIN on earlier tire stories. TEST on a complete unseen one.</span><span class="principle-line"></span></div>
+      </section>
+
+      <section class="models-section section-shell" id="models">
+        <div class="section-topline reveal"><span>06 — MODELS</span><span>BETTER FEATURES / SAME QUESTION</span><span>RMSE / MAE</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">06</span><h2>Same race.<br /><em>Sharper comparison.</em></h2></div>
+          <p>Two regressors, two feature sets. The model family changes; the evaluation boundary does not. Metrics are rendered only from <code>model_comparison.csv</code>.</p>
+        </div>
+        <div class="models-layout reveal reveal-delay-1">
+          <div class="model-table-wrap">
+            <div class="table-caption"><span class="technical-label">MODEL COMPARISON</span><span id="model-table-status">EVALUATION PENDING</span></div>
+            <div class="model-table-scroll">
+              <table class="model-table" aria-label="Model comparison">
+                <thead><tr><th>MODEL</th><th>FEATURE SET</th><th>RMSE</th><th>MAE</th><th>STATE</th></tr></thead>
+                <tbody id="model-table-body">
+                  <tr><td>Random Forest</td><td><span class="feature-pill">Baseline · grid + lap</span></td><td class="metric-cell">—</td><td class="metric-cell">—</td><td><span class="table-state">pending</span></td></tr>
+                  <tr><td>Random Forest</td><td><span class="feature-pill accent">Enhanced · + tire_age</span></td><td class="metric-cell">—</td><td class="metric-cell">—</td><td><span class="table-state">pending</span></td></tr>
+                  <tr><td>Gradient Boosting</td><td><span class="feature-pill">Baseline · grid + lap</span></td><td class="metric-cell">—</td><td class="metric-cell">—</td><td><span class="table-state">pending</span></td></tr>
+                  <tr><td>Gradient Boosting</td><td><span class="feature-pill accent">Enhanced · + tire_age</span></td><td class="metric-cell">—</td><td class="metric-cell">—</td><td><span class="table-state">pending</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-foot"><span>RMSE / root mean squared error</span><span>MAE / mean absolute error</span><span class="table-source">source: results/model_comparison.csv</span></div>
+          </div>
+          <aside class="inference-card">
+            <div class="inference-top"><span class="technical-label">EXPERIMENTAL TOOL</span><span class="lock-icon">⌁</span></div>
+            <h3>Predict one lap.<br /><em>Only with the artifact.</em></h3>
+            <div class="fake-form" aria-label="Prediction interface preview">
+              <label>DRIVER<select disabled><option>MODEL ARTIFACT REQUIRED</option></select></label>
+              <label>GRID POSITION<input disabled value="—" /></label>
+              <label>LAP NUMBER<input disabled value="—" /></label>
+              <label>TIRE AGE<input disabled value="—" /></label>
+            </div>
+            <button class="button button-disabled" disabled>Predict lap time <span>↗</span></button>
+            <p><span class="red-dot"></span> MODEL ARTIFACT NOT CONNECTED</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="degradation-section section-shell" id="degradation">
+        <div class="section-topline reveal"><span>07 — DEGRADATION</span><span>RELATIONSHIP / NOT CAUSALITY</span><span>INSPECT THE POINTS</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">07</span><h2>Look for the<br /><em>predictive pattern.</em></h2></div>
+          <p>Does lap time move with <code>tire_age</code> in the observed rows? The plot stays descriptive. It does not turn an association into a causal claim.</p>
+        </div>
+        <div class="chart-panel reveal reveal-delay-1">
+          <div class="chart-toolbar"><div><span class="technical-label">TIRE AGE × LAP TIME</span><b id="degradation-state">EVALUATION PENDING</b></div><label class="select-label">DRIVER <select id="driver-filter" disabled><option>Awaiting prediction rows</option></select></label></div>
+          <div class="chart-stage" id="degradation-stage">
+            <svg id="degradation-svg" class="data-chart" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-label="Tire age versus lap time chart"></svg>
+            <div class="chart-empty" id="degradation-empty"><span class="empty-cross">+</span><strong>EVALUATION PENDING</strong><small>Observed rows will appear here after the stint prediction artifact is connected.</small></div>
+            <div class="chart-tooltip" id="degradation-tooltip"></div>
+          </div>
+          <div class="chart-legend"><span><i class="legend-line actual-line"></i>observed lap time</span><span><i class="legend-dot chart-red-dot"></i>hover a row</span><span class="chart-source">source: results/stint_predictions.csv</span></div>
+        </div>
+      </section>
+
+      <section class="results-section section-shell" id="results">
+        <div class="section-topline reveal"><span>08 — RESULTS</span><span>THE COMPARISON IS THE EVIDENCE</span><span>NO EARLY WINNER</span></div>
+        <div class="results-intro reveal"><div><span class="section-number">08</span><h2>Let the artifact<br /><em>choose the winner.</em></h2></div><div class="results-sidecopy"><p>No model is called “best” before the holdout is evaluated. Once loaded, this section promotes the lowest observed error without hiding the other configurations.</p><div class="result-rule"><span></span><b>RESULTS ARE A CONSEQUENCE.</b></div></div></div>
+        <div class="results-stage reveal reveal-delay-1">
+          <div class="winner-panel" id="winner-panel"><span class="technical-label">CURRENT LEAD</span><div class="winner-lockup"><span class="winner-glyph">◌</span><div><h3>Winner not declared.</h3><p>Model comparison artifact required.</p></div></div><div class="winner-metrics"><div><span>RMSE</span><b>—</b></div><div><span>MAE</span><b>—</b></div><div><span>FEATURE SET</span><b>—</b></div></div></div>
+          <div class="result-bars" id="result-bars">
+            <div class="bar-placeholder"><span>Random Forest</span><div><i></i></div><b>—</b></div>
+            <div class="bar-placeholder"><span>Gradient Boosting</span><div><i></i></div><b>—</b></div>
+            <p class="bar-note">Metric bars will scale to the loaded RMSE range.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-section section-shell" id="final-stint">
+        <div class="section-topline reveal"><span>09 — FINAL STINT</span><span>THE CENTERPIECE</span><span>ACTUAL / PREDICTED</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">09</span><h2>One complete<br /><em>unseen story.</em></h2></div>
+          <p>The final stint is the test set. Earlier stints are training context; the chart below will draw the selected driver's observed and predicted lap times across the entire held-out run.</p>
+        </div>
+        <div class="prediction-stage reveal reveal-delay-1">
+          <div class="prediction-header"><div><span class="technical-label">FINAL-STINT EVALUATION</span><h3 id="prediction-driver">DRIVER / ARTIFACT REQUIRED</h3></div><div class="prediction-legend"><span><i class="legend-line train-line"></i> earlier stints / train</span><span><i class="legend-line actual-line"></i> actual</span><span><i class="legend-line predicted-line"></i> predicted</span></div></div>
+          <div class="prediction-chart-shell" id="prediction-chart-shell">
+            <svg id="prediction-svg" class="data-chart prediction-chart" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-label="Actual versus predicted final stint lap time"></svg>
+            <div class="prediction-empty" id="prediction-empty"><span class="empty-cross">+</span><strong>FINAL-STINT ARTIFACT REQUIRED</strong><small>Actual and predicted lines will draw here. No numbers are invented for the preview.</small></div>
+            <div class="prediction-tooltip" id="prediction-tooltip"></div>
+          </div>
+          <div class="prediction-foot"><div><span>TEST BOUNDARY</span><b>ENTIRE FINAL STINT</b></div><div><span>OUTPUT</span><b>ACTUAL − PREDICTED = ERROR</b></div><div><span>STATUS</span><b id="prediction-status">WAITING FOR ARTIFACT</b></div></div>
+        </div>
+      </section>
+
+      <section class="verdict-section section-shell" id="verdict">
+        <div class="verdict-line reveal"><span class="red-dot"></span><span>10 — VERDICT</span><span class="verdict-line-fill"></span><span>ONLY AFTER EVALUATION</span></div>
+        <div class="verdict-content reveal reveal-delay-1" id="verdict-content">
+          <span class="technical-label">THE QUESTION, RETURNED</span>
+          <h2>DID TIRE AGE<br /><em>HELP?</em></h2>
+          <div class="verdict-lock"><span class="lock-cross">+</span><div><b>VERDICT LOCKED</b><p>Connect the model comparison artifact to reveal the conclusion.</p></div></div>
+          <div class="verdict-metrics"><div><span>BASELINE RMSE</span><b>—</b></div><div><span>ENHANCED RMSE</span><b>—</b></div><div><span>DIFFERENCE</span><b>—</b></div><div><span>CHANGE</span><b>—</b></div></div>
+        </div>
+      </section>
+
+      <section class="repro-section section-shell" id="reproducibility">
+        <div class="section-topline reveal"><span>11 — REPRODUCIBILITY</span><span>TRACE THE RESULT BACKWARD</span><span>OPEN BY DEFAULT</span></div>
+        <div class="section-heading-row reveal">
+          <div><span class="section-number">11</span><h2>Research is<br /><em>repeatable by design.</em></h2></div>
+          <p>The interface is a presentation layer. The experiment remains portable: run the pipeline, write the artifacts, reload the page. No metric lives inside a component.</p>
+        </div>
+        <div class="repro-layout reveal reveal-delay-1">
+          <div class="architecture-map">
+            <div class="arch-node input-node"><span>INPUTS</span><b>four source tables</b><small>races · results · laps · pits</small></div>
+            <div class="arch-arrow"><i></i><span>clean + join</span></div>
+            <div class="arch-node process-node"><span>NOTEBOOK / PIPELINE</span><b>stints → features → models</b><small>Python · pandas · scikit-learn</small></div>
+            <div class="arch-arrow"><i></i><span>write artifacts</span></div>
+            <div class="arch-node output-node"><span>RESULTS</span><b>load without editing UI</b><small>summary · metrics · predictions</small></div>
+          </div>
+          <aside class="repro-panel">
+            <div class="repro-panel-head"><span class="technical-label">PROJECT ARCHITECTURE</span><span class="file-status">/results</span></div>
+            <div class="file-tree">
+              <div><span class="tree-glyph">⌄</span><b>experiment/</b></div>
+              <div class="indent"><span class="tree-glyph">›</span>notebook.ipynb</div>
+              <div class="indent"><span class="tree-glyph">›</span>source.py</div>
+              <div class="indent"><span class="tree-glyph">›</span>requirements.txt</div>
+              <div class="indent tree-folder"><span class="tree-glyph">⌄</span><b>results/</b></div>
+              <div class="indent-2"><span class="tree-glyph">›</span>model_comparison.csv</div>
+              <div class="indent-2"><span class="tree-glyph">›</span>cleaning_summary.csv</div>
+              <div class="indent-2"><span class="tree-glyph">›</span>stint_predictions.csv</div>
+              <div class="indent-2"><span class="tree-glyph">›</span>summary.json</div>
+            </div>
+            <div class="stack-tags"><span>Python</span><span>pandas</span><span>scikit-learn</span><span>matplotlib</span></div>
+            <div class="seed-row"><span>RANDOM SEED</span><b>CONFIGURED IN EXPERIMENT</b></div>
+            <div class="verification-grid" id="race-verification-panel">
+              <div><span>DRY RACE</span><b>pending</b></div>
+              <div><span>RED FLAG</span><b>pending</b></div>
+              <div><span>COMPLETED</span><b>—</b></div>
+              <div><span>STINT RULE</span><b>pending</b></div>
+            </div>
+          </aside>
+        </div>
+        <div class="repro-footer reveal"><div><span class="red-dot"></span><b>NO RANDOM SPLIT.</b><span>Earlier stints → train. Final stint → test.</span></div><a class="text-link" href="#top">Return to top <span>↑</span></a></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div><span class="brand-name">APEX <b>/</b> RESEARCH</span><span>EXPERIMENT 001</span></div>
+      <div><span>ARTIFACT-AWARE BY DEFAULT</span><span>FORMULA ONE LAP TIME PREDICTOR</span></div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
