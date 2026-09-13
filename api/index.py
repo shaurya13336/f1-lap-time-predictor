@@ -26,40 +26,37 @@ class PredictionRequest(BaseModel):
 
 
 @app.get("/api")
-def health():
-    try:
-        _, meta = load_artifacts()
-        return {"ok": True, "model": meta["model"], "feature_set": meta["feature_set"], "drivers": meta["drivers"]}
-    except RuntimeError as exc:
-        raise HTTPException(status_code=503, detail=str(exc))
-
-
-@app.post("/api/predict")
-def predict(payload: PredictionRequest):
+def api(driver: str | None = None, grid_position: int | None = None, lap_number: int | None = None, tire_age: int | None = None):
     try:
         model, meta = load_artifacts()
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
 
-    drivers = meta.get("drivers", [])
-    if payload.driver not in drivers:
+    # A plain GET /api is the health/metadata endpoint.
+    if driver is None and grid_position is None and lap_number is None and tire_age is None:
+        return {"ok": True, "model": meta["model"], "feature_set": meta["feature_set"], "drivers": meta["drivers"]}
+
+    if driver is None or grid_position is None or lap_number is None or tire_age is None:
+        raise HTTPException(status_code=400, detail="driver, grid_position, lap_number, and tire_age are required.")
+    if grid_position < 1 or lap_number < 1 or tire_age < 0:
+        raise HTTPException(status_code=400, detail="Grid and lap must be >= 1; tire age must be >= 0.")
+    if driver not in meta.get("drivers", []):
         raise HTTPException(status_code=400, detail="Driver is not part of the selected race experiment.")
 
-    # The assignment's enhanced model intentionally uses grid + lap + tire_age.
-    # Driver is validated as context but is not an additional feature.
     import pandas as pd
     features = pd.DataFrame([{
-        "grid": payload.grid_position,
-        "lap": payload.lap_number,
-        "tire_age": payload.tire_age,
+        "grid": grid_position,
+        "lap": lap_number,
+        "tire_age": tire_age,
     }])
     prediction = float(model.predict(features)[0])
     return {
         "prediction_seconds": prediction,
         "prediction": round(prediction, 3),
         "unit": "seconds",
-        "driver": payload.driver,
+        "driver": driver,
         "model": meta["model"],
         "feature_set": meta["feature_set"],
         "features": meta["features"],
     }
+

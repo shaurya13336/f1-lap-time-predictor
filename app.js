@@ -732,11 +732,13 @@ async function initLivePredictor(summary = {}) {
       result.textContent = 'RUNNING TRAINED MODEL…';
       result.classList.remove('is-error');
       try {
-        const response = await fetch('/api', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ driver: driverSelect.value, grid_position: grid, lap_number: lap, tire_age: tireAge })
+        const params = new URLSearchParams({
+          driver: driverSelect.value,
+          grid_position: String(grid),
+          lap_number: String(lap),
+          tire_age: String(tireAge)
         });
+        const response = await fetch(`/api?${params.toString()}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Prediction failed');
         result.innerHTML = `<span class="predict-result-label">PREDICTED LAP TIME</span><strong>${formatMetric(data.prediction)} s</strong><small>${escapeHTML(data.model)} / ${escapeHTML(data.feature_set)} · ${escapeHTML(data.driver)}</small>`;
